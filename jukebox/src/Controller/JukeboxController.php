@@ -11,8 +11,9 @@ class JukeboxController extends AbstractController
     #[Route('/jukebox', name: 'jukebox')]
     public function index(): Response
     {
-        return $this->render('index.html.twig', [
-            'title'=> ''
-        ]);
+        $songs = ['song1', 'song2', 'song3'];
+        return $this->render('index.html.twig', array(
+            'songs' => $songs
+        ));
     }
 }

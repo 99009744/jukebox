@@ -1,5 +1,11 @@
-{%  if title %}
-    <p>{{title}} is a movie </p>
-{% else %}
-    <p>Nope</p>
-{% endif %}
+{% extends "base.html.twig" %}
+
+{% block title %}
+Jukebox Page
+{% endblock %}
+
+{% block body %}
+{% for song in songs %}
+    <h1>{{song}}</h1>
+{% endfor %}
+{% endblock %}
