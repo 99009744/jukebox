@@ -15,14 +15,18 @@ class GenreFixtures extends Fixture
         $genre->setGenre('Hip Hop');
         $manager->persist($genre);
 
-        $genre = new Genre();
-        $genre->setGenre('Rap');
-        $manager->persist($genre);
+        $genre2 = new Genre();
+        $genre2->setGenre('Rap');
+        $manager->persist($genre2);
 
-        $genre = new Genre();
-        $genre->setGenre('Pop');
-        $manager->persist($genre);
+        $genre3 = new Genre();
+        $genre3->setGenre('Pop');
+        $manager->persist($genre3);
 
         $manager->flush();
+
+        $this->addReference('genre_1', $genre);
+        $this->addReference('genre_2', $genre2);
+        $this->addReference('genre_3', $genre3);
     }
 }
