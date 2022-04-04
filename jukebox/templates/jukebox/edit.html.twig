@@ -1,0 +1,35 @@
+{% extends "./base.html.twig" %}
+
+{% block body %}
+<div class="w-4/5 m-auto text-left">
+    <div class="py-15">
+        <h1 class="text-6xl">
+            Edit Movie Review
+        </h1>
+    </div>
+</div>
+
+<div class="w-4/5 m-auto pt-20">
+    <form 
+        action="/songs"
+        method="POST"
+        enctype="multipart/form-data">
+        <input 
+            type="text"
+            name="title"
+            value="Review title"
+            class="bg-transparent block border-b-2 w-full h-20 text-6xl outline-none">
+
+        <input 
+            name="artist"
+            placeholder="artist name"
+            class="py-20 bg-transparent block border-b-2 w-full h-60 text-xl outline-none"></input> 
+
+        <button    
+            type="submit"
+            class="uppercase mt-15 bg-blue-500 text-gray-100 text-lg font-extrabold py-4 px-8 rounded-3xl">
+            Submit Review
+        </button>
+    </form>
+</div>
+{% endblock %}
