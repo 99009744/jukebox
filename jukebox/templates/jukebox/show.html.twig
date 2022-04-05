@@ -5,22 +5,9 @@
         <h1 class="pt-20 sm:text-5xl md:text-7xl text-4xl font-bold text-center">
             {{ song.title|capitalize}} - {{ song.artist|capitalize }}
         </h1>
-        <div class="py-10 text-center">
-            <div class="inline-block sm:pt-1">
-                <h2 class="font-bold">
-                    Created by: Code With Dary
-                </h2>
-
-                <p class="text-sm text-gray-600">
-                    28-01-2022 4 min. read
-                </p>
-            </div>
-        </div>
-
         <img
             src="{{ song.cover }}"
             class="rounded-xl w-full shadow-xl"
-            alt="Icon of Code With Dary"
         />
     </div>
 {% endblock %} 

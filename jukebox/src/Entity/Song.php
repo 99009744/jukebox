@@ -27,6 +27,9 @@ class Song
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'songs')]
     private $genres;
 
+    #[ORM\Column(type: 'integer')]
+    private $time;
+
     public function __construct()
     {
         $this->genres = new ArrayCollection();
@@ -93,6 +96,18 @@ class Song
     public function removeGenre(Genre $genre): self
     {
         $this->genres->removeElement($genre);
+
+        return $this;
+    }
+
+    public function getTime(): ?int
+    {
+        return $this->time;
+    }
+
+    public function setTime(int $time): self
+    {
+        $this->time = $time;
 
         return $this;
     }
