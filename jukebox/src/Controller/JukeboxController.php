@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Song;
+use App\Form\SongFormType;
 use App\Repository\SongRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,17 @@ class JukeboxController extends AbstractController
         
         return $this->render('jukebox/index.html.twig', [
             'songs' => $this->songRepository->findAll()
+        ]);
+    }
+
+    #[Route('/songs/create', name: 'create_song')]
+    public function create(): Response
+    {
+        $song = new Song();
+        $form = $this->createForm(SongFormType::class, $song);
+
+        return $this->render('jukebox/create.html.twig',[
+            'form' => $form->createView()
         ]);
     }
 
