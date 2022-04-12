@@ -8,8 +8,10 @@ use App\Repository\SongRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+    use Symfony\Component\Routing\Annotation\Route;
 
 class JukeboxController extends AbstractController
 {
@@ -18,11 +20,12 @@ class JukeboxController extends AbstractController
     // {
     //     $this->em = $em;
     // }
-
+    private $em;
     private $songRepository;
-    public function __construct(SongRepository $songRepository)
+    public function __construct(SongRepository $songRepository, EntityManagerInterface $em)
     {
         $this->songRepository = $songRepository;
+        $this->em = $em;
     }
 
     #[Route('/jukebox', methods: ['GET'], name: 'jukebox')]
@@ -42,10 +45,34 @@ class JukeboxController extends AbstractController
     }
 
     #[Route('/songs/create', name: 'create_song')]
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $song = new Song();
         $form = $this->createForm(SongFormType::class, $song);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $newSong = $form->getData();
+
+            $imagePath = $form->get('cover')->getData();
+            if ($imagePath){
+                $newFileName = uniqid() . '.' . $imagePath->guessExtension();
+
+                try{
+                    $imagePath->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+                        $newFileName
+                    );
+                } catch(FileException $e){
+                    return new Response($e->getMessage());
+                } 
+                    $newSong->setImagePath('/uploads/' . $newFileName);
+            }
+            $this->em->persist($newSong);
+            $this->em->flush();
+
+            return $this->redirectToRoute('songs');
+        }
 
         return $this->render('jukebox/create.html.twig',[
             'form' => $form->createView()
