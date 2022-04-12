@@ -66,12 +66,12 @@ class JukeboxController extends AbstractController
                 } catch(FileException $e){
                     return new Response($e->getMessage());
                 } 
-                    $newSong->setImagePath('/uploads/' . $newFileName);
+                    $newSong->setCover('uploads/' . $newFileName);
             }
             $this->em->persist($newSong);
             $this->em->flush();
 
-            return $this->redirectToRoute('songs');
+            return $this->redirectToRoute('song', ['id' => $newSong->getId()]);
         }
 
         return $this->render('jukebox/create.html.twig',[
