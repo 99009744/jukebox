@@ -1,10 +1,11 @@
 {% extends "./base.html.twig" %}
 
 {% block body %}
-    <div class="sm:w-3/5 w-4/5 mx-auto">
-        <h1 class="pt-20 sm:text-5xl md:text-7xl text-4xl font-bold text-center">
+    <div class="sm:w-1/5 w-1/5 mx-auto">
+        <h1 class="pt-20 sm:text-5xl md:text-3xl text-3xl font-bold text-center">
             {{ song.title|capitalize}} - {{ song.artist|capitalize }}
         </h1>
+        <p class="pt-5 sm:text-l md:text-lg text-2xl font-bold text-center">Song lenght: {{ song.time|date("i:s")}} </p>
         <img
             src="/{{ song.cover }}"
             class="rounded-xl w-full shadow-xl"

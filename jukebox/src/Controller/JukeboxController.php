@@ -5,13 +5,14 @@ namespace App\Controller;
 use App\Entity\Song;
 use App\Form\SongFormType;
 use App\Repository\SongRepository;
+use App\Repository\GenreRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-    use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class JukeboxController extends AbstractController
 {
@@ -22,9 +23,11 @@ class JukeboxController extends AbstractController
     // }
     private $em;
     private $songRepository;
-    public function __construct(SongRepository $songRepository, EntityManagerInterface $em)
+    private $genreRepository;
+    public function __construct(SongRepository $songRepository, GenreRepository $genreRepository, EntityManagerInterface $em)
     {
         $this->songRepository = $songRepository;
+        $this->genreRepository = $genreRepository;
         $this->em = $em;
     }
 
@@ -40,7 +43,8 @@ class JukeboxController extends AbstractController
     //    $songs = $repository->findAll();
         
         return $this->render('jukebox/index.html.twig', [
-            'songs' => $this->songRepository->findAll()
+            'songs' => $this->songRepository->findAll(),
+            'genres' =>$this->genreRepository->findAll()
         ]);
     }
 
