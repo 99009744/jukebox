@@ -19,25 +19,29 @@ class SongFormType extends AbstractType
                 'attr' => array(
                     'class' => 'bg-transparent block border-b-2 w-full h-20 text-6xl outline-none',
                     'placeholder' => 'Enter Title...'
-                )
+                ),
+                'required' => false
             ])
             ->add('artist', TextType::class,[
                 'attr' => array(
                     'class' => 'bg-transparent block border-b-2 w-full h-20 text-6xl outline-none',
                     'placeholder' => 'Enter Artist...'
-                )
+                ),
+                'required' => false
             ])
             ->add('cover', FileType::class,[
                 'attr' => array(
                     'class' => 'py-10'
-                )
+                ),
+                'required' => false
             ])
             ->add('time', IntegerType::class,[
                 'attr' => array(
                     'class' => 'bg-transparent block mt-10 border-b-2 w-full h-20 text-6xl outline-none',
                     'placeholder' => 'Enter Time...',
-                    'min' => 1,
-                )
+                    'min' => 1
+                ),
+                'required' => false
             ])
             // ->add('genres')
         ;
