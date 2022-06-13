@@ -6,7 +6,6 @@ use App\Repository\SongRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SongRepository::class)]
 class Song
@@ -17,25 +16,18 @@ class Song
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 3)]
     private $title;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 3)]
     private $artist;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 3)]
     private $cover;
 
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'songs')]
     private $genres;
 
     #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank]
     private $time;
 
     public function __construct()
@@ -53,7 +45,7 @@ class Song
         return $this->title;
     }
 
-    public function setTitle(?string $title): self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -65,7 +57,7 @@ class Song
         return $this->artist;
     }
 
-    public function setArtist(?string $artist): self
+    public function setArtist(string $artist): self
     {
         $this->artist = $artist;
 
@@ -77,7 +69,7 @@ class Song
         return $this->cover;
     }
 
-    public function setCover(?string $cover): self
+    public function setCover(string $cover): self
     {
         $this->cover = $cover;
 
@@ -113,7 +105,7 @@ class Song
         return $this->time;
     }
 
-    public function setTime(?int $time): self
+    public function setTime(int $time): self
     {
         $this->time = $time;
 
