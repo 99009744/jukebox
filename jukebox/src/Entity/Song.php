@@ -92,6 +92,11 @@ class Song
         return $this->genres;
     }
 
+    public function hasGenre(Genre $genre): bool
+    {
+        return $this->genres->contains($genre);
+    }
+
     public function addGenre(Genre $genre): self
     {
         if (!$this->genres->contains($genre)) {

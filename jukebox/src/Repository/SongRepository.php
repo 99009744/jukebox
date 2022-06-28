@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Genre;
 use App\Entity\Song;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -43,6 +46,15 @@ class SongRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function findByGenre(Genre $genre): Collection
+    {
+       $songs = new ArrayCollection($this->findAll());
+
+       return $songs->filter(function (Song $song) use ($genre) {
+            return $song->hasGenre($genre);
+       });
     }
 
     // /**

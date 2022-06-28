@@ -32,8 +32,17 @@ class JukeboxController extends AbstractController
     }
 
     #[Route('/jukebox', methods: ['GET'], name: 'jukebox')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $songs = [];
+        $genre = $request->get('genre');
+        if (null !== $genre) {
+            $genre = $this->genreRepository->findOneBy(['genre' => $genre]);
+            $songs = $this->songRepository->findByGenre($genre);
+        } else {
+            $songs = $this->songRepository->findAll();
+        }
+        
         // findAll()  - SELECT * from songs.
         // find(value) - SELECT * from songs WHERE id = value.
         // findby([], ['id' => DESC]) - Select * from songs ORDER BY id DESC.
@@ -43,7 +52,7 @@ class JukeboxController extends AbstractController
     //    $songs = $repository->findAll();
         
         return $this->render('jukebox/index.html.twig', [
-            'songs' => $this->songRepository->findAll(),
+            'songs' => $songs,
             'genres' =>$this->genreRepository->findAll()
         ]);
     }
@@ -87,9 +96,18 @@ class JukeboxController extends AbstractController
     public function show($id): Response
     {
         $song = $this->songRepository->find($id);
-
         return $this->render('jukebox/show.html.twig', [
             'song' => $song
+        ]);
+    }
+
+    #[Route('/jukebox/{genre}', methods: ['GET'], name: 'genre')]
+    public function genreFilter($genre): Response
+    {
+        $song = $this->genreRepository->find($genre);
+
+        return $this->render('jukebox.html.twig', [
+            'genre' => $genre
         ]);
     }
 }

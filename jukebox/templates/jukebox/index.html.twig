@@ -10,23 +10,44 @@
         </div>
     </div>
     <div class="flex flex-wrap gap-4 mx-auto w-3/5 my-8">
-        <div class="">
+        {# <div class="">
             <a 
                 href="/songs/create" 
                 class="uppercase border border-gray-500 text-lg py-4 px-6 rounded transition transition-all bg-gray-800 text-white hover:bg-white hover:text-gray-800">
                 Create New Song
             </a>
+        </div> #}
+        <div class="">
+            <a 
+                href="/jukebox" 
+                class="uppercase border border-gray-500 text-lg py-4 px-6 rounded transition transition-all bg-gray-800 text-white hover:bg-white hover:text-gray-800">
+                All
+            </a>
         </div>
-    
         {% for genre in genres %}
             <div class="">
             <a 
-                href="/jukebox/{{ genre.id }}" 
+                href="{{ path('jukebox', {'genre': genre.genre}) }}" 
                 class="uppercase border border-gray-500 text-lg py-4 px-6 rounded transition transition-all bg-gray-800 text-white hover:bg-white hover:text-gray-800">
                 {{ genre.genre }}
             </a>
         </div>
         {% endfor %}
+        
+        {# <select name="genre_filter" id="genre_filter">
+            <option value="">All</option>
+                {% for genre in genres %}
+                    <option
+                    value="/jukebox/{{ genre.genre }}" 
+                    class="uppercase border border-gray-500 text-lg py-4 px-6 rounded transition transition-all bg-gray-800 text-white hover:bg-white hover:text-gray-800">
+                    {{ genre.genre }}
+                </option>
+        {% endfor %}
+        </select>
+        <button class="uppercase border border-gray-500 text-lg py-4 px-6 rounded transition transition-all bg-gray-800 text-white hover:bg-white hover:text-gray-800">
+            <input type="submit" value="Submit">
+        </button> #}
+        
     </div>
     <div class="md:grid lg:grid-cols-3 gap-20 w-4/5 mx-auto py-15 ">
         <!-- Review Item -->
