@@ -22,4 +22,9 @@ class LoginController extends AbstractController
             'error'         => $error,
         ]);
     }
+
+    // public function logout(): void
+    // {
+    //     throw new \LoginException('');
+    // }
 }
