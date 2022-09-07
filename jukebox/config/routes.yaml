@@ -7,5 +7,5 @@ kernel:
     type: annotation
 
 app_logout:
-    path: /jukebox
+    path: /logout
     methods: GET
