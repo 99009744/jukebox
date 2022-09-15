@@ -113,12 +113,12 @@ class Song
         return $this;
     }
 
-    public function getTime(): ?int
+    public function getTime(): int
     {
         return $this->time;
     }
 
-    public function setTime(?int $time): self
+    public function setTime(int $time): self
     {
         $this->time = $time;
 

@@ -13,6 +13,29 @@
         <h1 class="text-6xl pt-12 pb-8">
             My playlist
         </h1>
+        <div class="md:grid lg:grid-cols-3 gap-20 w-4/5 mx-auto py-15 ">
+        <!-- Review Item -->
+        {% if playlist is not empty %}
+            {% for song in playlist.songs %}
+                <div class="text-center pt-8 pb-4">
+                    <img
+                        src="{{ song.cover }}"
+                        alt=""
+                        class="shadow-xl rounded-md"
+                    />
+
+                    <h2 class="text-gray-700 font-bold text-2xl py-2">
+                        {{ song.title|capitalize }} - {{ song.artist|capitalize }}
+                    </h2>
+
+                    <a href="/jukebox/{{ song.id }}" class="uppercase border border-gray-500 text-gray-600 text-lg py-3 px-10 rounded transition hover:bg-gray-800 hover:text-white">
+                        More info
+                    </a>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+    </div>
     </div>
 </div>
 {% endblock %}

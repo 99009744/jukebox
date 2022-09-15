@@ -21,9 +21,6 @@ class Playlist
     #[ORM\Column(type: 'integer')]
     private $userId;
 
-    #[ORM\Column(type: 'time')]
-    private $playtime;
-
     #[ORM\ManyToMany(targetEntity: Song::class)]
     private $songs;
 
@@ -61,16 +58,27 @@ class Playlist
         return $this;
     }
 
-    public function getPlaytime(): ?\DateTimeInterface
+    public function getTotalPlaytimeInSeconds(): int
     {
-        return $this->playtime;
+        $totalPlaytimeInSeconds = 0;
+        foreach($this->getSongs() as $song){
+            $totalPlaytimeInSeconds += (int)$song->getTime();
+        }
+        
+        return $totalPlaytimeInSeconds;
     }
 
-    public function setPlaytime(\DateTimeInterface $playtime): self
+    public function containsSongWithId(int $songId): bool
     {
-        $this->playtime = $playtime;
+        foreach($this->getSongs() as $song)
+        {
+            if ($song->getId() === $songId)
+            {
+                return true;
+            }
+        }
 
-        return $this;
+        return false;
     }
 
     /**
@@ -84,7 +92,7 @@ class Playlist
     public function addSong(Song $song): self
     {
         if (!$this->songs->contains($song)) {
-            $this->songs[] = $song;
+            $this->songs->add($song);
         }
 
         return $this;
