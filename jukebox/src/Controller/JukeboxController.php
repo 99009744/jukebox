@@ -64,19 +64,19 @@ class JukeboxController extends AbstractController
         $form = $this->createForm(SongFormType::class, $song);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $newSong = $form->getData();
 
             $imagePath = $form->get('cover')->getData();
-            if ($imagePath){
+            if ($imagePath) {
                 $newFileName = uniqid() . '.' . $imagePath->guessExtension();
 
-                try{
+                try {
                     $imagePath->move(
                         $this->getParameter('kernel.project_dir') . '/public/uploads',
                         $newFileName
                     );
-                } catch(FileException $e){
+                } catch(FileException $e) {
                     return new Response($e->getMessage());
                 } 
                     $newSong->setCover('uploads/' . $newFileName);

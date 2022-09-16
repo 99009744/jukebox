@@ -1,6 +1,7 @@
 {% extends "./base.html.twig" %}
 
 {% block body %}
+    
     <div class="w-4/5 m-auto text-center">
         <div class="py-12 border-b border-gray-200">
             <h1 class="text-6xl pt-12 pb-8">
@@ -8,6 +9,27 @@
             </h1>
             <p>Amount of songs = {{ songs|length }}</p>
         </div>
+        {% for message in app.flashes('success') %}
+            <div role="alert">
+                <div class="bg-green-500 text-white font-bold rounded-t px-3 py-2">
+                    Succes!
+                </div>
+                <div class="border border-t-0 border-green-400 rounded-b bg-green-100 px-4 py-3 text-green-700">
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('fail') %}
+            <div role="alert">
+                <div class="bg-red-500 text-white font-bold rounded-t px-3 py-2">
+                    Oops!
+                </div>
+                <div class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+            
+        {% endfor %}
     </div>
     {# {{ app.user.email }} #}
     <div class="flex flex-wrap gap-4 mx-auto w-3/5 my-8">
@@ -36,6 +58,7 @@
         {% endfor %}
         
     </div>
+    
     <div class="md:grid lg:grid-cols-3 gap-20 w-4/5 mx-auto py-15 ">
         <!-- Review Item -->
         {% for song in songs %}
@@ -54,7 +77,7 @@
                     More info
                 </a>
                 
-                <a href="{{ path('app_playlist_add', {'song' : song.id}) }}" target="_blank" class="uppercase border border-gray-500 bg-green-300 text-red-600 text-lg py-3 px-3 rounded transition hover:bg-red-300 hover:text-green-800">
+                <a href="{{ path('app_playlist_add', {'song' : song.id}) }}" class="uppercase border border-gray-500 bg-green-300 text-red-600 text-lg py-3 px-3 rounded transition hover:bg-red-300 hover:text-green-800">
                     + 
                 </a>
             </div>

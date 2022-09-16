@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Controller\jukebox;
 
 class PlaylistController extends AbstractController
 {
@@ -32,19 +33,20 @@ class PlaylistController extends AbstractController
     public function addSong(Song $song)
     {
         $playlist = $this->session->get('playlist');
-        if(!$playlist instanceof Playlist)
-        {
+        if(!$playlist instanceof Playlist) {
             $playlist = new Playlist();
         }
         
-        if($playlist->containsSongWithId($song->getId())) 
-        {
-            return new Response('Nummer komt al voor');
+        if($playlist->containsSongWithId($song->getId())) {
+            $this->addFlash('fail', $song->getArtist() . ' - ' .  $song->getTitle() . ' is already in your playlist');
+            
+            return $this->redirectToRoute('jukebox');
         }
         
         $playlist->addSong($song);
         $this->session->set('playlist', $playlist);
+        $this->addFlash('success', $song->getArtist() . ' - ' .  $song->getTitle() . ' Has been added to your playlist');
         
-        return new Response('Nummer is toegevoegd');
+        return $this->redirectToRoute('jukebox');
     }
 }
