@@ -68,17 +68,17 @@ class Playlist
         return $totalPlaytimeInSeconds;
     }
 
-    public function containsSongWithId(int $songId): bool
+    public function getSongWithId(int $songId): ?Song
     {
         foreach($this->getSongs() as $song)
         {
             if ($song->getId() === $songId)
             {
-                return true;
+                return $song;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**

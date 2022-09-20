@@ -37,7 +37,7 @@ class PlaylistController extends AbstractController
             $playlist = new Playlist();
         }
         
-        if($playlist->containsSongWithId($song->getId())) {
+        if(null !== $playlist->getSongWithId($song->getId())) {
             $this->addFlash('fail', $song->getArtist() . ' - ' .  $song->getTitle() . ' is already in your playlist');
             
             return $this->redirectToRoute('jukebox');
@@ -48,5 +48,17 @@ class PlaylistController extends AbstractController
         $this->addFlash('success', $song->getArtist() . ' - ' .  $song->getTitle() . ' Has been added to your playlist');
         
         return $this->redirectToRoute('jukebox');
+    }
+
+    #[Route('/playlist/remove/{song}', name: 'app_playlist_remove', methods:['GET', 'DELETE'])]
+    public function removeSongFromPlaylist(Song $song) : Response
+    {
+        $playlist = $this->session->get('playlist');
+        if(null !== $playlist->getSongWithId($song->getId())) {
+            $removeSong = $playlist->getSongWithId($song->getId());
+            $playlist->removeSong($removeSong);
+        }
+        
+        return $this->redirectToRoute('app_playlist');
     }
 }
