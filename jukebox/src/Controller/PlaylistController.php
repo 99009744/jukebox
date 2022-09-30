@@ -7,9 +7,10 @@ use App\Entity\User;
 use App\Entity\Playlist;
 use App\Form\SavePlaylistFormType;
 use App\Repository\SongRepository;
+use App\Repository\PlaylistRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -19,11 +20,13 @@ class PlaylistController extends AbstractController
 {
     private SessionInterface $session;
     private $songRepository;
+    private $playlistRepository;
 
-    public function __construct(RequestStack $requestStack, SongRepository $songRepository)
+    public function __construct(RequestStack $requestStack, SongRepository $songRepository, PlaylistRepository $playlistRepository)
     {
         $this->session = $requestStack->getSession();
         $this->songRepository = $songRepository;
+        $this->playlistRepository = $playlistRepository;
     }
 
     #[Route('/playlist', name: 'app_playlist')]
@@ -81,19 +84,74 @@ class PlaylistController extends AbstractController
 
     private function safePlaylist($playlist, EntityManagerInterface $entityManager) : void
     {
+        $playlistId = $playlist->getId();
         $safePlaylist = new Playlist;
         $user = $this->getUser();
-        if(!empty($user)){
+        
+        if(!empty($user)) {
             $userId = $user->getId();
-            }
-            
+        }
+
+        if(!empty($playlistId)) {
+            $oldPlaylist= $this->playlistRepository->find($playlistId);
+            $oldPlaylist->getId();
+            $this->playlistRepository->remove($oldPlaylist);
+        }
+
         $safePlaylist->setUserId($userId);
         $safePlaylist->setName($playlist->getName());
         foreach ( $playlist->getSongs() as $song ) {
             $safePlaylist->addSong($this->songRepository->findOneBy(['id' => $song->getId()]));
         }
+        
         $entityManager->persist($safePlaylist);
         $entityManager->flush();
 
+    }
+
+    #[Route('/myPlaylists', name: 'app_myplaylists')]
+    public function showAllPlaylistsFromUser(): Response
+    {
+        $user = $this->getUser();
+        if(!empty($user)){
+            $userId = $user->getId();
+            }
+        $playlists = $this->playlistRepository->findBy(['userId' => $userId]);
+        return $this->render('playlist/playlists.html.twig', [
+            'playlists' => $playlists
+        ]);
+    }
+
+    #[Route('/myPlaylist/{id}', methods:['GET'], name: 'app_myplaylist')]
+    public function showOnePlaylist($id): Response
+    {
+        $playlist = $this->playlistRepository->find($id);
+
+        return $this->render('playlist/show.html.twig', [
+            'playlist' => $playlist
+        ]);
+    }
+
+    #[Route('/playlist/{playlistId}', methods:['GET'], name: 'app_load_playlist')]
+    public function loadPlaylistToSession($playlistId) : Response
+    {
+        $loadPlaylist = $this->playlistRepository->find($playlistId);
+        $playlist = $this->session->get('playlist');
+
+        if(!$playlist instanceof Playlist) {
+            $playlist = new Playlist();
+        }
+
+        foreach ( $loadPlaylist->getSongs() as $song ) {
+            $playlist->addSong($loadPlaylist->getSongWithId($song->getId()));
+        }
+        $playlist->setName($loadPlaylist->getName());
+        $playlist->setId($loadPlaylist->getId());
+        $playlist->setUserId($loadPlaylist->getUserId());
+        
+        $this->session->set('playlist', $playlist);
+
+        return $this->redirectToRoute('jukebox',[
+        'playlist' => $this->session->get('playlist')]);
     }
 }
