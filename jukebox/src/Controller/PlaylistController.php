@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Song;
 use App\Entity\User;
 use App\Entity\Playlist;
+use App\Services\Session;
 use App\Form\SavePlaylistFormType;
 use App\Repository\SongRepository;
 use App\Repository\PlaylistRepository;
@@ -30,9 +31,11 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist', name: 'app_playlist')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, Session $session): Response
     {
-        $safePlaylist = $this->session->get('playlist');
+        // $newPlaylist = Session::class::getPlaylist();
+        // dd($newPlaylist);
+        $safePlaylist = $session->getPlaylist();
         $form = $this->createForm(SavePlaylistFormType::class, $safePlaylist);
         $formName = $form->handleRequest($request);
         
@@ -43,7 +46,7 @@ class PlaylistController extends AbstractController
         }
 
         return $this->render('playlist/index.html.twig', [
-            'playlist' => $this->session->get('playlist'),
+            'playlist' => $session->getPlaylist(),
             'controller_name' => 'PlaylistController',
             'savePlaylistForm' => $form->createView(),
         ]);
@@ -71,9 +74,9 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist/remove/{song}', name: 'app_playlist_remove', methods:['GET', 'DELETE'])]
-    public function removeSongFromPlaylist(Song $song) : Response
+    public function removeSongFromPlaylist(Song $song, Session $session) : Response
     {
-        $playlist = $this->session->get('playlist');
+        $playlist = $session->getPlaylist();
         if(null !== $playlist->getSongWithId($song->getId())) {
             $removeSong = $playlist->getSongWithId($song->getId());
             $playlist->removeSong($removeSong);
@@ -133,10 +136,10 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist/{playlistId}', methods:['GET'], name: 'app_load_playlist')]
-    public function loadPlaylistToSession($playlistId) : Response
+    public function loadPlaylistToSession($playlistId, Session $session) : Response
     {
         $loadPlaylist = $this->playlistRepository->find($playlistId);
-        $playlist = $this->session->get('playlist');
+        $playlist = $session->getPlaylist();
 
         if(!$playlist instanceof Playlist) {
             $playlist = new Playlist();
@@ -152,6 +155,6 @@ class PlaylistController extends AbstractController
         $this->session->set('playlist', $playlist);
 
         return $this->redirectToRoute('jukebox',[
-        'playlist' => $this->session->get('playlist')]);
+        'playlist' => $session->getPlaylist()]);
     }
 }
