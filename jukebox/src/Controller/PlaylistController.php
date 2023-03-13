@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Song;
 use App\Entity\User;
 use App\Entity\Playlist;
-use App\Services\Session;
+use App\Services\PlaylistResolver;
 use App\Form\SavePlaylistFormType;
 use App\Repository\SongRepository;
 use App\Repository\PlaylistRepository;
@@ -31,11 +31,13 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist', name: 'app_playlist')]
-    public function index(Request $request, EntityManagerInterface $entityManager, Session $session): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         // $newPlaylist = Session::class::getPlaylist();
         // dd($newPlaylist);
-        $safePlaylist = $session->getPlaylist();
+
+        $safePlaylist = $playlistResolver->getPlaylist();
+        
         $form = $this->createForm(SavePlaylistFormType::class, $safePlaylist);
         $formName = $form->handleRequest($request);
         
@@ -46,28 +48,29 @@ class PlaylistController extends AbstractController
         }
 
         return $this->render('playlist/index.html.twig', [
-            'playlist' => $session->getPlaylist(),
+            'playlist' => $playlistResolver->getPlaylist(),
             'controller_name' => 'PlaylistController',
             'savePlaylistForm' => $form->createView(),
         ]);
     }
 
     #[Route('/playlist/add/{song}', name: 'app_playlist_add')]
-    public function addSong(Song $song)
+    public function addSong(Song $song, PlaylistResolver $playlistResolver)
     {
-        $playlist = $this->session->get('playlist');
-        if(!$playlist instanceof Playlist) {
-            $playlist = new Playlist();
+        $playlist = $playlistResolver->getPlaylist('playlist');
+
+        if(!$playlist instanceof PlaylistResolver) {
+            $playlistResolver->createPlaylist();
         }
         
-        if(null !== $playlist->getSongWithId($song->getId())) {
+        if(null !== $playlistResolver->getSongWithIdFromPlaylist($song->getId())) {
             $this->addFlash('fail', $song->getArtist() . ' - ' .  $song->getTitle() . ' is already in your playlist');
             
             return $this->redirectToRoute('jukebox');
         }
         
-        $playlist->addSong($song);
-        $this->session->set('playlist', $playlist);
+        $playlistResolver->addSongToPlaylist($song);
+        
         $this->addFlash('success', $song->getArtist() . ' - ' .  $song->getTitle() . ' Has been added to your playlist');
         
         return $this->redirectToRoute('jukebox');
