@@ -8,10 +8,9 @@ use App\Entity\Playlist;
 use App\Services\PlaylistResolver;
 use App\Form\SavePlaylistFormType;
 use App\Repository\SongRepository;
-use App\Repository\PlaylistRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -21,13 +20,11 @@ class PlaylistController extends AbstractController
 {
     private SessionInterface $session;
     private $songRepository;
-    private $playlistRepository;
 
-    public function __construct(RequestStack $requestStack, SongRepository $songRepository, PlaylistRepository $playlistRepository)
+    public function __construct(RequestStack $requestStack, SongRepository $songRepository)
     {
         $this->session = $requestStack->getSession();
         $this->songRepository = $songRepository;
-        $this->playlistRepository = $playlistRepository;
     }
 
     #[Route('/playlist', name: 'app_playlist')]
@@ -87,30 +84,22 @@ class PlaylistController extends AbstractController
 
     private function safePlaylist($playlist, EntityManagerInterface $entityManager) : void
     {
-        $playlistId = $playlist->getId();
         $safePlaylist = new Playlist;
         $user = $this->getUser();
-        
-        if(!empty($user)) {
+        if(!empty($user)){
             $userId = $user->getId();
-        }
-
-        if(!empty($playlistId)) {
-            $oldPlaylist= $this->playlistRepository->find($playlistId);
-            $oldPlaylist->getId();
-            $this->playlistRepository->remove($oldPlaylist);
-        }
-
+            }
+            
         $safePlaylist->setUserId($userId);
         $safePlaylist->setName($playlist->getName());
         foreach ( $playlist->getSongs() as $song ) {
             $safePlaylist->addSong($this->songRepository->findOneBy(['id' => $song->getId()]));
         }
-        
         $entityManager->persist($safePlaylist);
         $entityManager->flush();
 
     }
+<<<<<<< HEAD
 
     #[Route('/myPlaylists', name: 'app_myplaylists')]
     public function showAllPlaylistsFromUser(): Response
@@ -157,4 +146,6 @@ class PlaylistController extends AbstractController
         return $this->redirectToRoute('jukebox',[
         'playlist' => $session->getPlaylist()]);
     }
+=======
+>>>>>>> parent of 8db4caf (Added loading in playlist)
 }
