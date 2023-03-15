@@ -99,7 +99,6 @@ class PlaylistController extends AbstractController
         $entityManager->flush();
 
     }
-<<<<<<< HEAD
 
     #[Route('/myPlaylists', name: 'app_myplaylists')]
     public function showAllPlaylistsFromUser(): Response
@@ -146,6 +145,4 @@ class PlaylistController extends AbstractController
         return $this->redirectToRoute('jukebox',[
         'playlist' => $session->getPlaylist()]);
     }
-=======
->>>>>>> parent of 8db4caf (Added loading in playlist)
 }
