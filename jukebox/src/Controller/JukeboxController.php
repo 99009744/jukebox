@@ -7,6 +7,7 @@ use App\Form\SongFormType;
 use App\Repository\SongRepository;
 use App\Repository\GenreRepository;
 use Doctrine\ORM\EntityManager;
+use App\Services\PlaylistResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -32,8 +33,9 @@ class JukeboxController extends AbstractController
     }
 
     #[Route('/jukebox', methods: ['GET'], name: 'jukebox')]
-    public function index(Request $request): Response
+    public function index(Request $request, PlaylistResolver $playlistResolver): Response
     {
+        $playlist = $playlistResolver->getPlaylist();
         $songs = [];
         $genre = $request->get('genre');
         if (null !== $genre) {
@@ -53,7 +55,8 @@ class JukeboxController extends AbstractController
         
         return $this->render('jukebox/index.html.twig', [
             'songs' => $songs,
-            'genres' =>$this->genreRepository->findAll()
+            'genres' =>$this->genreRepository->findAll(),
+            'playlist' => $playlist
         ]);
     }
 

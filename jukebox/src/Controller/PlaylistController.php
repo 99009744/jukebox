@@ -31,13 +31,13 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist', name: 'app_playlist')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, PlaylistResolver $playlistResolver): Response
     {
         // $newPlaylist = Session::class::getPlaylist();
         // dd($newPlaylist);
-
         $safePlaylist = $playlistResolver->getPlaylist();
-        
+        dd($playlistResolver);
+
         $form = $this->createForm(SavePlaylistFormType::class, $safePlaylist);
         $formName = $form->handleRequest($request);
         
@@ -55,25 +55,22 @@ class PlaylistController extends AbstractController
     }
 
     #[Route('/playlist/add/{song}', name: 'app_playlist_add')]
-    public function addSong(Song $song, PlaylistResolver $playlistResolver)
+    public function addSong(Song $song)
     {
-        $playlist = $playlistResolver->getPlaylist('playlist');
+        $playlistResolver = new PlaylistResolver();
 
-        if(!$playlist instanceof PlaylistResolver) {
-            $playlistResolver->createPlaylist();
-        }
-        
-        if(null !== $playlistResolver->getSongWithIdFromPlaylist($song->getId())) {
+        $value = $song->getId();
+
+        if ($playlistResolver->isInPlaylist($value)) {
+            // Value is already in playlist
             $this->addFlash('fail', $song->getArtist() . ' - ' .  $song->getTitle() . ' is already in your playlist');
             
             return $this->redirectToRoute('jukebox');
+        } else {
+            $playlistResolver->addToPlaylist($value);
+            $this->addFlash('success', $song->getArtist() . ' - ' .  $song->getTitle() . ' Has been added to your playlist');
+            return $this->redirectToRoute('jukebox');
         }
-        
-        $playlistResolver->addSongToPlaylist($song);
-        
-        $this->addFlash('success', $song->getArtist() . ' - ' .  $song->getTitle() . ' Has been added to your playlist');
-        
-        return $this->redirectToRoute('jukebox');
     }
 
     #[Route('/playlist/remove/{song}', name: 'app_playlist_remove', methods:['GET', 'DELETE'])]

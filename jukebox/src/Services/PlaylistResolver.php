@@ -2,36 +2,37 @@
 
 namespace App\Services;
 
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Playlist;
+use App\Entity\Song;
 
 class PlaylistResolver
 {
-    private $session;
+    private $playlist = [];
 
-    public function __construct(SessionInterface $session)
+    public function addToPlaylist($value): void
     {
-        $this->session = $session;
+        $this->playlist[] = $value;
     }
 
-    public function addToPlaylist($songId)
+    public function removeFromPlaylist(Request $request): void
     {
-        $playlist = $this->session->get('playlist', []);
-        $playlist[] = $songId;
-        $this->session->set('playlist', $playlist);
-    }
+        $value = $request->get('value');
 
-    public function removeFromPlaylist($songId)
-    {
-        $playlist = $this->session->get('playlist', []);
-        $key = array_search($songId, $playlist);
-        if ($key !== false) {
-            array_splice($playlist, $key, 1);
-            $this->session->set('playlist', $playlist);
+        if (($key = array_search($value, $this->playlist)) !== false) {
+            unset($this->playlist[$key]);
         }
     }
 
-    public function getPlaylist()
+    public function isInPlaylist($value): bool
     {
-        return $this->session->get('playlist', []);
+        return in_array($value, $this->playlist);
+    }
+
+    public function getPlaylist(): array
+    {
+        return $this->playlist;
     }
 }
